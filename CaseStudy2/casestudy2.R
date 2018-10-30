@@ -15,71 +15,28 @@
 #
 ##########################################################################
 
+library(biomaRt)
+library(genefu)
+library(xlsx)
+library(org.Hs.eg.db)
+library(readxl)
+library(RColorBrewer)
+require(piano)
+require(VennDiagram)
+require(GSA)
+library(corrplot)
+
 setwd("E:/RadiationSigDB/CaseStudy2/")
 
-RT.sigs1 <- read_excel("Oxic-Hypoxia-Sigs (2).xlsx",2)
+# Load Hypoxic signatures from the "RadiationResponseSigs" folder
+load("HypoxicSignatures_RTResponse.RData")
+Toustrup <- Hypoxic_RTSignatures[[1]]
+Eustace <- Hypoxic_RTSignatures[[2]]
+Lendahl <- Hypoxic_RTSignatures[[3]]
 
-# Toustrup signature
-Toustrup <- data.frame(RT.sigs1$`Toustrup - 15 Genes HN`,NA)
-colnames(Toustrup) <- c("Gene","EntId")
-Toustrup <- Toustrup[1:15,]
-Toustrup$Gene <- as.character(Toustrup$Gene)
-Toustrup[6,1] <- "C3orf28"
-for (i in 1:nrow(Toustrup))
-{
-  print(i)
-  res <- try(select(org.Hs.eg.db, as.character(Toustrup$Gene[i]), c("ENTREZID","GENENAME"), "ALIAS"),silent = TRUE) # checks and saves error
-  if(class(res) == "try-error"){
-    Toustrup[i,"EntId"] <- NA
-    Toustrup[i,"GeneName"] <- NA
-  } else {
-    Toustrup[i,"EntId"] <- res$ENTREZID[1] # if more than 1 EntID, choose the first one
-    Toustrup[i,"GeneName"] <- res$GENENAME[1]
-  }
-}
-
-
-# Eustace signature
-Eustace <- data.frame(RT.sigs1$`Eustace - 26 Genes HN`,NA)
-colnames(Eustace) <- c("Gene","EntId")
-Eustace <- Eustace[1:26,]
-Eustace$Gene <- as.character(Eustace$Gene)
-Eustace[5,1] <- "C20orf20"
-for (i in 1:nrow(Eustace))
-{
-  print(i)
-  res <- try(select(org.Hs.eg.db, Eustace$Gene[i], c("ENTREZID","GENENAME"), "ALIAS"),silent = TRUE) # checks and saves error
-  if(class(res) == "try-error"){
-    Eustace[i,"EntId"] <- NA
-    Eustace[i,"GeneName"] <- NA
-  } else {
-    Eustace[i,"EntId"] <- res$ENTREZID[1] # if more than 1 EntID, choose the first one
-    Eustace[i,"GeneName"] <- res$GENENAME[1]
-  }
-}
-
-# Lendahl signature
-Lendahl <- data.frame(RT.sigs1$`Lendahl - 30 Genes HN`,NA)
-colnames(Lendahl) <- c("Gene","EntId")
-Lendahl <- Lendahl[1:30,]
-Lendahl$Gene <- as.character(Lendahl$Gene)
-Lendahl[6,1] <- "BRCA1"
-Lendahl[16,1] <- "KDM3A"
-
-for (i in 1:nrow(Lendahl))
-{
-  print(i)
-  res <- try(select(org.Hs.eg.db, Lendahl$Gene[i], c("ENTREZID","GENENAME"), "ALIAS"),silent = TRUE) # checks and saves error
-  if(class(res) == "try-error"){
-    Lendahl[i,"EntId"] <- NA
-    Lendahl[i,"GeneName"] <- NA
-  } else {
-    Lendahl[i,"EntId"] <- res$ENTREZID[1] # if more than 1 EntID, choose the first one
-    Lendahl[i,"GeneName"] <- res$GENENAME[1]
-  }
-}
-
+# Load the patient data
 load('HN-TCGA.RData')
+edata1 <- HNTCGA[[1]]
 
 g <- list(Toustrup$Gene,Eustace$Gene,Lendahl$Gene)
 
@@ -106,29 +63,27 @@ rownames(mat) <- c("Toustrup","Eustace","Lendahl")
 colnames(mat) <- colnames(edata3)
 c <- cor(t(mat))
 
+Jpeg("Fig2A:CorPlot_Scores.jpg")
 corrplot::corrplot(c, type="upper",col=brewer.pal(n=8, name="RdBu"),tl.col="black", tl.srt=45)
-
-Jpeg("BoxplotScores.jpg")
-boxplot(mat[1,],mat[2,],mat[3,],col=brewer.pal(3,"Set2"),names=c("Toustrup","Eustace","Lindahl"),ylab="Hypoxia Score",cex.lab=1.5,cex.axis=1.5)
 dev.off()
 
-draw.triple.venn(area1 = nrow(Toustrup), area2 = nrow(Eustace), area3 = nrow(Lendahl),
-                 n12 = length(intersect(Toustrup$Gene,Eustace$Gene)),
-                 n23 = length(intersect(Eustace$Gene,Lendahl$Gene)),
-                 n13 = length(intersect(Lendahl$Gene,Toustrup$Gene)),
-                 n123 = length(Reduce(intersect,list(Toustrup$Gene,Eustace$Gene,Lendahl$Gene))),
-                 category = c("Toustrup", "Eustace", "Lendahl"), lty = "blank",
-                 fill = brewer.pal(3,"Set2"))
+#Jpeg("BoxplotScores.jpg")
+#boxplot(mat[1,],mat[2,],mat[3,],col=brewer.pal(3,"Set2"),names=c("Toustrup","Eustace","Lindahl"),ylab="Hypoxia Score",cex.lab=1.5,cex.axis=1.5)
+#dev.off()
+
+#draw.triple.venn(area1 = nrow(Toustrup), area2 = nrow(Eustace), area3 = nrow(Lendahl),
+#                n12 = length(intersect(Toustrup$Gene,Eustace$Gene)),
+#                n23 = length(intersect(Eustace$Gene,Lendahl$Gene)),
+#                 n13 = length(intersect(Lendahl$Gene,Toustrup$Gene)),
+#                n123 = length(Reduce(intersect,list(Toustrup$Gene,Eustace$Gene,Lendahl$Gene))),
+#                 category = c("Toustrup", "Eustace", "Lendahl"), lty = "blank",
+#                fill = brewer.pal(3,"Set2"))
 
 ################################################################################################
 ################################################################################################
 ################################################################################################
 
 # PATHWAY ANALYSIS
-
-require(piano)
-require(VennDiagram)
-require(GSA)
 
 gSets <- GSA.read.gmt("c5.bp.v6.2.symbols.gmt")
 dfgSets <- as.data.frame(cbind(unlist(gSets$genesets))) ## genes
@@ -157,13 +112,13 @@ n13 = length(intersect(rownames(b1.Tou),rownames(b1.Len)))
 n23 = length(intersect(rownames(b1.Eus),rownames(b1.Len)))
 n123 = length(Reduce(intersect,list(rownames(b1.Tou),rownames(b1.Eus),rownames(b1.Len))))
 
-draw.triple.venn(area1 = nrow(b1.Tou), area2 = nrow(b1.Eus), area3 = nrow(b1.Len), n12, n23, n13,
-                 n123, category = c("Toustrup", "Eustace", "Lendahl"), lty = "blank",
-                 fill = c("skyblue", "pink1", "mediumorchid"),cex = 1.5,
-                 cat.cex = 2,cat.col=c("skyblue", "pink1", "mediumorchid"))
+#draw.triple.venn(area1 = nrow(b1.Tou), area2 = nrow(b1.Eus), area3 = nrow(b1.Len), n12, n23, n13,
+#                 n123, category = c("Toustrup", "Eustace", "Lendahl"), lty = "blank",
+#                 fill = c("skyblue", "pink1", "mediumorchid"),cex = 1.5,
+#                 cat.cex = 2,cat.col=c("skyblue", "pink1", "mediumorchid"))
 
-dev.off()
-pdf("Pathways-HypoxiaSigs.pdf")
+
+pdf("Fig2B-Pathways-HypoxiaSigs.pdf")
 draw.triple.venn(area1 = nrow(b1.Tou), area2 = nrow(b1.Eus), area3 = nrow(b1.Len), n12, n23, n13,
                  n123, category = c("Toustrup", "Eustace", "Lendahl"), lty = "blank",
                  fill = brewer.pal(3,"Set1"),cex = 1.5,
