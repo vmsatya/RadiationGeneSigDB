@@ -1,20 +1,19 @@
-######################################################################
+##########################################################################
 #
-# Case study2: COmparison of 3 HYPOXIC HN cancer signatures in
+# Case study2: Comparison of 3 HYPOXIC Head and Neck cancer signatures in
 # TCGA data and Compare Pathways enriched using these signatures
 #
 # Patient: TCGA HNSCC (99 treated with RT only)
 # Correlation of scores using: Spearman
 # Signature score computation: weighted average of genes in a
 # gene signature (sig.score function in genefu package)
-# Scale the cell line and patient datasets for fair comparison
-# of signature scores
+# Scale the patient datasets 
 # 
 # Pathway analysis: 
 # Gene sets: GO terms
 # Package: runGSAHyper in Piano package
 #
-######################################################################
+##########################################################################
 
 setwd("E:/RadiationSigDB/CaseStudy2/")
 
