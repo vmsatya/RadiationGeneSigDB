@@ -4,5 +4,5 @@ RadiationGeneSigDB has a collection of 11 oxic and 24 hypoxic signatures with th
 
 Oxic, Hypoxic signatures can be downloaded as an excel file, or as an RData object from "RadiationResponseSigs" folder.
 
-Preprint: https://www.biorxiv.org/content/early/2018/10/29/455345
+Preprint: https://www.biorxiv.org/content/early/2018/10/29/455345.1
 
