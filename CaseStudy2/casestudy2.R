@@ -40,13 +40,13 @@ edata1 <- HNTCGA[[1]]
 
 g <- list(Toustrup$Gene,Eustace$Gene,Lendahl$Gene)
 
-annot = data.frame(rownames(edata3))
+annot = data.frame(rownames(edata1))
 colnames(annot) <- "EntrezGene.ID"
-rownames(annot) <- rownames(edata3)
-data <- edata3
+rownames(annot) <- rownames(edata1)
+data <- edata1
 
 scores <- list()
-mat <- matrix(NA,length(g),ncol(edata3))
+mat <- matrix(NA,length(g),ncol(edata1))
 for(k in 1:length(g)){
   b <- g[[k]]
   b1 <- as.numeric(+1)
