@@ -1,7 +1,8 @@
 ##########################################################################
 #
-# Case study2: Comparison of 3 HYPOXIC Head and Neck cancer signatures in
-# TCGA data and Compare Pathways enriched using these signatures
+# Case study2: Comparison of 3 HYPOXIC Head and Neck cancer signatures 
+# Toustrup_2011; Eustace_2013; Lendahl_2009 in theTCGA data and,
+# Compare Pathways enriched using these signatures.
 #
 # Patient: TCGA HNSCC (99 treated with RT only)
 # Correlation of scores using: Spearman
