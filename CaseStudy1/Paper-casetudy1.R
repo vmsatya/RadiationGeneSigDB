@@ -23,6 +23,7 @@ library(RColorBrewer)
 
 setwd("E:/RadiationSigDB/CaseStudy1/")
 
+# Load the oxic signature data located in the "RadiationResponseSigs" folder
 load('OxicSignatures_RTResponse.RData')
 # Piening oxic signature
 Piening.brca1 <- Oxic_RTsignatures[[1]] 
