@@ -3,7 +3,7 @@
 # Case study1: COmparison of OXIC breast cancer signatures in cell line
 # data and in patient data 
 #
-# In-vitro: CCLERNAseq with 26 cell lines
+# In-vitro: Normalized CCLERNAseq with 26 breast cancer cell lines
 # Patient: METABRIC
 # Subtyping: SCMOD2 function in genefu package
 # Correlation of scores: Spearman
@@ -23,57 +23,17 @@ library(RColorBrewer)
 
 setwd("E:/RadiationSigDB/CaseStudy1/")
 
-RT.sigs <- read_excel("Oxic-Hypoxia-Sigs (2).xlsx",1)
-RT.sigs <- data.frame(RT.sigs)
+load('OxicSignatures_RTResponse.RData')
+# Piening oxic signature
+Piening.brca1 <- Oxic_RTsignatures[[1]] 
+# Speers oxic signature
+speers.brca.sf2 <- Oxic_RTsignatures[[4]]
 
-# Piening BRCA signature
-Piening.brca <- data.frame(RT.sigs$Brian.Piening.2009.Breast.Cancer.cell.lines..worked.on.patient.cohorts.,RT.sigs$X__1)
-Piening.brca <- Piening.brca[1:281,]
-Piening.brca[,3] <- c(rep(-1,70),rep(1,211))
-colnames(Piening.brca) <- c("Gene","Temp","Direction")
-Piening.brca <- Piening.brca[,c(1,3)]
+# load cell line data
+load('CCLE_RNAseq-Breast.RData')
 
-# Duplicate genes are found as the list in the paper is presented based on the Probe id
-# Remove duplicated elements, use !duplicated(), where ! is a logical negation:
-Piening.brca1 <- Piening.brca[!duplicated(Piening.brca$Gene),]
-for (i in 1:nrow(Piening.brca1))
-{
-  print(i)
-  res <- try(select(org.Hs.eg.db, as.character(Piening.brca1$Gene[i]), c("ENTREZID","GENENAME"), "ALIAS"),silent = TRUE) # checks and saves error
-  if(class(res) == "try-error"){
-    Piening.brca1[i,"EntId"] <- NA
-    Piening.brca1[i,"GeneName"] <- NA
-  } else {
-    Piening.brca1[i,"EntId"] <- res$ENTREZID[1] # if more than 1 EntID, choose the first one
-    Piening.brca1[i,"GeneName"] <- res$GENENAME[1]
-  }
-}
-
-# Speers signature
-speers.brca.sf2 <- data.frame(RT.sigs$Speers.2015.Breast.Cell.lines.SF2,RT.sigs$X__2,NA)
-colnames(speers.brca.sf2) <- c("Gene","Direction","EntId")
-speers.brca.sf2 <- speers.brca.sf2[1:51,]
-for (i in 1:nrow(speers.brca.sf2))
-{
-  print(i)
-  res <- try(select(org.Hs.eg.db, as.character(speers.brca.sf2$Gene[i]), c("ENTREZID","GENENAME"), "ALIAS"),silent = TRUE) # checks and saves error
-  if(class(res) == "try-error"){
-    speers.brca.sf2[i,"EntId"] <- NA
-    speers.brca.sf2[i,"GeneName"] <- NA
-  } else {
-    speers.brca.sf2[i,"EntId"] <- res$ENTREZID[1] # if more than 1 EntID, choose the first one
-    speers.brca.sf2[i,"GeneName"] <- res$GENENAME[1]
-  }
-}
-
-# Piening
-load('CCLERNAseq.RData')
-load('YardHistology.RData')
-tmp <- YardHistology$cellid[which(YardHistology$Primarysite == "breast")]
-edata2 <- edata1[,match(tmp,colnames(edata1))]
-edata3 <- edata2[,-c(11,22)]
-edata4 <- t(scale(t(edata3)))
-
+### Computation of signature score
+# Piening signature
 annot = data.frame(rownames(edata4))
 colnames(annot) <- "EntrezGene.ID"
 rownames(annot) <- rownames(edata4)
