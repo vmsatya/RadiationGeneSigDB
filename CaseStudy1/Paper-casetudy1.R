@@ -19,6 +19,7 @@ library(genefu)
 library(xlsx)
 library(org.Hs.eg.db)
 library(readxl)
+library(RColorBrewer)
 
 setwd("E:/RadiationSigDB/CaseStudy1/")
 
