@@ -1,12 +1,12 @@
 ######################################################################
 #
-# Case study1: COmparison of OXIC breast cancer signatures across
-# different model systems
+# Case study1: COmparison of OXIC breast cancer signatures in cell line
+# data and in patient data 
 #
 # In-vitro: CCLERNAseq with 26 cell lines
 # Patient: METABRIC
 # Subtyping: SCMOD2 function in genefu package
-# Correlation of scores using: Spearman
+# Correlation of scores: Spearman
 # Signature score computation: weighted average of genes in a
 # gene signature (sig.score function in genefu package)
 # Scale the cell line and patient datasets for fair comparison
