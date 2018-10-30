@@ -11,11 +11,10 @@
 # gene signature (sig.score function in genefu package)
 # Scale the cell line and patient datasets for fair comparison
 # of signature scores
-#
-# Result: 
+# 
 ######################################################################
 
-require(biomaRt)
+library(biomaRt)
 library(genefu)
 library(xlsx)
 library(org.Hs.eg.db)
